@@ -51,18 +51,25 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
   double vx = x_state(2);
   double vy = x_state(3);
 
-  double c1 = px*px + py*py;
-  double c2 = sqrt(c1);
-  double c3 = c1*c2;
+  if (fabs(px) < 0.0001 and fabs(py) < 0.0001){
+      px = 0.0001;
+      py = 0.0001;
+    }
 
-  if(fabs(c1) < 0.0001) {
-    std::cout << "ERROR: CalculateJacobian: potential division by zero." << std::endl;
-    return Hj;
+  double c1 = px*px + py*py;
+
+  if(fabs(c1) < 0.0000001) {
+      std::cout << "WARNING: CalculateJacobian: prevent division by zero." << std::endl;
+      c1 = 0.0000001;
   }
 
-  Hj << (px/c2),              (py/c2),                0,      0,
-       -(py/c1),              (px/c1),                0,      0,
-       py*(vx*py - vy*px)/c3, px*(px*vy - py*vx)/c3,  px/c2,  py/c2;
+  double c2 = sqrt(c1);
+  double c3 = c1 * c2;
+
+  //compute the Jacobian matrix
+  Hj << (px/c2),              (py/c2),                0,    0,
+        -(py/c1),             (px/c1),                0,     0,
+        py*(vx*py - vy*px)/c3, px*(px*vy - py*vx)/c3, px/c2, py/c2;
 
   return Hj;
 }
