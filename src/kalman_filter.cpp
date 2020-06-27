@@ -53,6 +53,8 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   VectorXd h = VectorXd(3);
   h << rho, theta, rho_dot;
 
+//  std::cout << "state in polar: " << h << std::endl;
+
   VectorXd y = z - h;
 
   // angle normalization
@@ -63,6 +65,9 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 }
 
 void KalmanFilter::CommonUpdate(const VectorXd &y){
+
+  std::cout << "y_: " << y << std::endl;
+
   MatrixXd H_t = H_.transpose();
   MatrixXd S = H_ * P_ * H_t + R_;
   MatrixXd K =  P_ * H_t * S.inverse();
